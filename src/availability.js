@@ -15,11 +15,11 @@ export function isRoomAvailable(request, bookings, room, now) {
   if (room.blocked) return result(false, 'ROOM_BLOCKED');
 
   // BUG-B: sort() mutates the original bookings array
-  const sorted = bookings.sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
+  const sorted = [...bookings].sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
   for (const b of sorted) {
     if (b.roomId !== room.id) continue;
     // BUG-A: <= and >= treat touching endpoints as conflicts
-    if (start <= Date.parse(b.end) && end >= Date.parse(b.start)) {
+    if (start < Date.parse(b.end) && end > Date.parse(b.start)) {
       return result(false, 'OVERLAP');
     }
   }
