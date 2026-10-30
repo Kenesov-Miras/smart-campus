@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Campus - Room Availability</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 480px; margin: 0 auto; padding: 16px; background: #f5f7fb; color: #1b2430; }
+    h1 { font-size: 1.3rem; }
+    .card { background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.1); margin-bottom: 12px; }
+    label { display: block; margin: 10px 0 4px; font-weight: 600; }
+    input[type=time] { width: 100%; padding: 10px; font-size: 1rem; box-sizing: border-box; }
+    button { width: 100%; margin-top: 14px; padding: 12px; font-size: 1rem; background: #1a3a6b; color: #fff; border: 0; border-radius: 8px; cursor: pointer; }
+    #result { margin-top: 14px; padding: 12px; border-radius: 8px; font-weight: 700; display: none; }
+    .ok { background: #d9f5e3; color: #11693a; }
+    .no { background: #fde1e1; color: #a31515; }
+    ul { padding-left: 18px; margin: 6px 0 0; }
+  </style>
+  <meta property="og:image" content="https://bolt.new/static/og_default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
+  <script type="module" crossorigin src="/assets/index-B407YJIA.js"></script>
+</head>
+<body>
+  <h1>Smart Campus: Room R1 availability</h1>
+  <div class="card">
+    <b>Existing bookings (2026-11-02, UTC)</b>
+    <ul><li>10:00 - 11:00</li><li>13:00 - 14:00</li></ul>
+    <small>Fixed demo clock: 08:00. Max duration: 120 min.</small>
+  </div>
+  <div class="card">
+    <label for="start">Start time</label>
+    <input id="start" type="time" value="11:00" />
+    <label for="end">End time</label>
+    <input id="end" type="time" value="12:00" />
+    <label><input id="blocked" type="checkbox" /> Room is blocked</label>
+    <button id="check">Check availability</button>
+    <div id="result" role="status"></div>
+  </div>
+
+</body>
+</html>
