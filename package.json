@@ -2,5 +2,8 @@
   "name": "smart-campus",
   "version": "1.0.0",
   "type": "module",
-  "scripts": { "test": "node --test test/availability.test.js" }
+  "scripts": {
+    "build": "npm test",
+    "test": "node --test test/availability.test.js"
+  }
 }
