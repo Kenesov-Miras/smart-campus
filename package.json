@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "npm test",
+    "dev": "vite",
+    "build": "vite build",
     "test": "node --test test/availability.test.js"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
   }
 }
