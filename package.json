@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node node_modules/vite/bin/vite.js build",
+    "build": "npx --yes vite@5.4.21 build",
     "test": "node --test test/availability.test.js"
   },
   "dependencies": {
