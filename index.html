@@ -39,19 +39,17 @@
 
   <script type="module">
     import { isRoomAvailable } from './src/availability.js';
+    import { REASONS, DEMO_NOW, DEMO_BOOKINGS } from './src/constants.js';
 
-    const NOW = '2026-11-02T08:00:00Z';
-    const bookings = [
-      { roomId: 'R1', start: '2026-11-02T10:00:00Z', end: '2026-11-02T11:00:00Z' },
-      { roomId: 'R1', start: '2026-11-02T13:00:00Z', end: '2026-11-02T14:00:00Z' },
-    ];
+    const NOW = DEMO_NOW;
+    const bookings = DEMO_BOOKINGS;
     const messages = {
-      OK: 'The room is free for this time.',
-      INVALID_RANGE: 'Start time must be before end time.',
-      IN_THE_PAST: 'This time is in the past.',
-      TOO_LONG: 'Booking is longer than 120 minutes.',
-      ROOM_BLOCKED: 'The room is blocked.',
-      OVERLAP: 'The time overlaps an existing booking.',
+      [REASONS.OK]: 'The room is free for this time.',
+      [REASONS.INVALID_RANGE]: 'Start time must be before end time.',
+      [REASONS.IN_THE_PAST]: 'This time is in the past.',
+      [REASONS.TOO_LONG]: 'Booking is longer than 120 minutes.',
+      [REASONS.ROOM_BLOCKED]: 'The room is blocked.',
+      [REASONS.OVERLAP]: 'The time overlaps an existing booking.',
     };
 
     document.getElementById('check').addEventListener('click', () => {

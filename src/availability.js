@@ -1,4 +1,5 @@
-// Smart Campus - room availability (BUGGY version: BUG-A + BUG-B)
+import { REASONS } from './constants.js';
+
 export const MAX_DURATION_MIN = 120;
 
 export function isRoomAvailable(request, bookings, room, now) {
@@ -7,23 +8,21 @@ export function isRoomAvailable(request, bookings, room, now) {
   const nowMs = Date.parse(now);
 
   // AC1
-  if (!(start < end)) return result(false, 'INVALID_RANGE');
-  if (start < nowMs) return result(false, 'IN_THE_PAST');
+  if (!(start < end)) return result(false, REASONS.INVALID_RANGE);
+  if (start < nowMs) return result(false, REASONS.IN_THE_PAST);
   // AC2
-  if ((end - start) / 60000 > MAX_DURATION_MIN) return result(false, 'TOO_LONG');
+  if ((end - start) / 60000 > MAX_DURATION_MIN) return result(false, REASONS.TOO_LONG);
   // AC3
-  if (room.blocked) return result(false, 'ROOM_BLOCKED');
+  if (room.blocked) return result(false, REASONS.ROOM_BLOCKED);
 
-  // BUG-B: sort() mutates the original bookings array
   const sorted = [...bookings].sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
   for (const b of sorted) {
     if (b.roomId !== room.id) continue;
-    // BUG-A: <= and >= treat touching endpoints as conflicts
     if (start < Date.parse(b.end) && end > Date.parse(b.start)) {
-      return result(false, 'OVERLAP');
+      return result(false, REASONS.OVERLAP);
     }
   }
-  return result(true, 'OK');
+  return result(true, REASONS.OK);
 }
 
 function result(available, reason) {
