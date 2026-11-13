@@ -29,6 +29,11 @@ test('T03 AC1 request in the past -> Unavailable', () => {
   assert.equal(r.available, false);
   assert.equal(r.reason, REASONS.IN_THE_PAST);
 });
+test('T15 AC1 start == now is not in the past -> Available', () => {
+  const r = ask('08:00','09:00');
+  assert.equal(r.available, true);
+  assert.equal(r.reason, REASONS.OK);
+});
 // AC2
 test('T04 AC2 121 min -> Unavailable', () => {
   const r = ask('15:00','17:01');
