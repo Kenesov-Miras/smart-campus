@@ -5,17 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Smart Campus - Room Availability</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 480px; margin: 0 auto; padding: 16px; background: #f5f7fb; color: #1b2430; }
-    h1 { font-size: 1.3rem; }
-    .card { background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.1); margin-bottom: 12px; }
-    label { display: block; margin: 10px 0 4px; font-weight: 600; }
-    input[type=time] { width: 100%; padding: 10px; font-size: 1rem; box-sizing: border-box; }
-    button { width: 100%; margin-top: 14px; padding: 12px; font-size: 1rem; background: #1a3a6b; color: #fff; border: 0; border-radius: 8px; cursor: pointer; }
-    #result { margin-top: 14px; padding: 12px; border-radius: 8px; font-weight: 700; display: none; }
-    .ok { background: #d9f5e3; color: #11693a; }
-    .no { background: #fde1e1; color: #a31515; }
-    ul { padding-left: 18px; margin: 6px 0 0; }
-    #explanation { margin-top: 10px; padding: 12px; border-radius: 8px; background: #eef2f8; color: #33415c; font-weight: 400; display: none; font-size: 0.95rem; }
+    :root {
+      --blue: #1a56a8; --blue-dark: #144176; --blue-ring: rgba(26, 86, 168, .35);
+      --green-bg: #e4f7ea; --green-text: #11693a;
+      --red-bg: #fdeaea; --red-text: #a31515;
+      --grey-bg: #f1f3f7; --grey-border: #b9c2d0; --grey-text: #4a5670;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      max-width: 560px; margin: 0 auto; padding: 24px 16px 40px;
+      background: #f5f7fb; color: #1b2430; line-height: 1.5;
+    }
+    h1 { font-size: 1.45rem; line-height: 1.2; margin: 0 0 18px; letter-spacing: -0.01em; }
+    h2 { font-size: 1.02rem; margin: 0 0 10px; }
+    .card {
+      background: #fff; border-radius: 16px; padding: 22px 20px;
+      box-shadow: 0 2px 10px rgba(27, 36, 48, .07); margin-bottom: 18px;
+    }
+    .card small { color: #66738c; }
+    .bookings { list-style: none; padding: 0; margin: 0 0 12px; }
+    .bookings li {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 8px; background: #f5f7fb;
+      font-variant-numeric: tabular-nums; font-size: .95rem;
+    }
+    .bookings li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #7d9bc4; flex: none; }
+    label { display: block; margin: 12px 0 5px; font-weight: 600; font-size: .95rem; }
+    input[type=time], button {
+      width: 100%; min-height: 44px; border-radius: 10px; font-size: 1rem;
+    }
+    input[type=time] { padding: 8px 12px; border: 1px solid #c6cede; background: #fff; color: #1b2430; }
+    input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--blue); }
+    input[type=time]:focus-visible, button:focus-visible {
+      outline: none; border-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-ring);
+    }
+    button {
+      margin-top: 16px; padding: 10px 16px; border: 0; cursor: pointer;
+      font-weight: 600; transition: background-color .15s ease, box-shadow .15s ease;
+    }
+    button.primary { background: var(--blue); color: #fff; }
+    button.primary:hover { background: var(--blue-dark); }
+    button.secondary { background: #fff; color: var(--blue); border: 1.5px solid var(--blue); }
+    button.secondary:hover { background: #eef3fb; }
+    #result {
+      margin-top: 16px; padding: 13px 14px; border-radius: 10px;
+      font-weight: 700; display: none;
+    }
+    .ok { background: var(--green-bg); color: var(--green-text); }
+    .no { background: var(--red-bg); color: var(--red-text); }
+    .ok::before { content: "\2713\0020"; }
+    .no::before { content: "\2715\0020"; }
+    #explanation {
+      margin-top: 12px; padding: 13px 14px; border-radius: 10px;
+      background: var(--grey-bg); border: 1.5px dashed var(--grey-border);
+      color: var(--grey-text); font-weight: 400; display: none; font-size: .95rem;
+    }
+    .badge {
+      display: inline-block; padding: 2px 9px; margin-bottom: 7px;
+      border-radius: 999px; background: #e2e7ef; color: #3c4a63;
+      font-size: .72rem; font-weight: 600; letter-spacing: .03em; text-transform: uppercase;
+    }
+    #explanationText { margin: 0; }
+    @media (max-width: 480px) {
+      body { padding: 16px 12px 32px; }
+      h1 { font-size: 1.25rem; }
+      .card { padding: 18px 16px; }
+    }
   </style>
   <meta property="og:image" content="https://bolt.new/static/og_default.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -24,22 +81,23 @@
 <body>
   <h1>Smart Campus: Room R1 availability</h1>
   <div class="card">
-    <b>Existing bookings (2026-11-02, UTC)</b>
-    <ul><li>10:00 - 11:00</li><li>13:00 - 14:00</li></ul>
+    <h2>Existing bookings (2026-11-02, UTC)</h2>
+    <ul class="bookings"><li>10:00 &ndash; 11:00</li><li>13:00 &ndash; 14:00</li></ul>
     <small>Fixed demo clock: 08:00. Max duration: 120 min.</small>
   </div>
   <div class="card">
+    <h2>Check a time slot</h2>
     <label for="start">Start time</label>
     <input id="start" type="time" value="11:00" />
     <label for="end">End time</label>
     <input id="end" type="time" value="12:00" />
     <label><input id="blocked" type="checkbox" /> Room is blocked</label>
-    <button id="check">Check availability</button>
+    <button id="check" class="primary">Check availability</button>
     <div id="result" role="status"></div>
-    <button id="explain" type="button" style="background:#4a6789;">Explain availability</button>
+    <button id="explain" type="button" class="secondary">Explain availability</button>
     <div id="explanation" role="status">
-      <b>AI-generated explanation (mock)</b>
-      <p id="explanationText" style="margin:6px 0 0;"></p>
+      <span class="badge">AI-generated explanation (mock)</span>
+      <p id="explanationText"></p>
     </div>
   </div>
 
