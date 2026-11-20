@@ -15,15 +15,42 @@ export async function explainAvailability(input, { now = Date.now(), timeoutMs =
   const check = validateInput(input);
   if (!check.ok) return { explanation: FALLBACK, ok: false, error: check.error };
 
+  let timer;
   try {
-    const raw = await model(check.value, now, timeoutMs, latencyMs);
+    // The timeout is enforced here so ANY model (including an injected one)
+    // is cut off after timeoutMs; the mock's own timer alone is not enough.
+    const raw = await Promise.race([
+      Promise.resolve().then(() => model(check.value, now, timeoutMs, latencyMs)),
+      new Promise((_resolve, reject) => {
+        timer = setTimeout(() => {
+          const e = new Error('mock model timed out');
+          e.code = 'MOCK_TIMEOUT';
+          reject(e);
+        }, timeoutMs);
+      }),
+    ]);
     const out = validateOutput(raw, check.value.isAvailable);
     if (!out.ok) return { explanation: FALLBACK, ok: false, error: out.error };
     return { explanation: raw, ok: true };
   } catch (err) {
     const error = err && err.code === 'MOCK_TIMEOUT' ? 'timeout' : 'model error';
     return { explanation: FALLBACK, ok: false, error };
+  } finally {
+    if (timer) clearTimeout(timer);
   }
+}
+
+// Pure UI helper: builds the explainer input from the state captured at
+// check time, so the explanation always matches the displayed verdict.
+export function buildExplainRequest(lastCheck) {
+  if (lastCheck == null) return null;
+  return {
+    roomLabel: lastCheck.roomLabel,
+    start: lastCheck.start,
+    end: lastCheck.end,
+    isAvailable: lastCheck.available,
+    reasonCode: lastCheck.reason,
+  };
 }
 
 function validateInput(input) {

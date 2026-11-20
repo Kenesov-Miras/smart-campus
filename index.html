@@ -45,7 +45,7 @@
 
   <script type="module">
     import { isRoomAvailable } from './src/availability.js';
-    import { explainAvailability } from './src/explainer.js';
+    import { explainAvailability, buildExplainRequest } from './src/explainer.js';
     import { REASONS, DEMO_NOW, DEMO_BOOKINGS } from './src/constants.js';
 
     const NOW = DEMO_NOW;
@@ -73,24 +73,27 @@
       box.style.display = 'block';
       box.className = res.available ? 'ok' : 'no';
       box.textContent = `${res.label}: ${messages[res.reason] || res.reason}`;
-      lastResult = res;
+      lastResult = { ...res, roomLabel: 'R1', start: s, end: e };
       const exp = document.getElementById('explanation');
       exp.style.display = 'none';
     });
 
+    // Invalidate any shown explanation when inputs change after a check,
+    // so it can no longer be mistaken for the current status.
+    for (const id of ['start', 'end', 'blocked']) {
+      document.getElementById(id).addEventListener('change', () => {
+        const exp = document.getElementById('explanation');
+        exp.style.display = 'none';
+        lastResult = null;
+      });
+    }
+
     document.getElementById('explain').addEventListener('click', async () => {
       const box = document.getElementById('explanation');
       const text = document.getElementById('explanationText');
-      if (!lastResult) { box.style.display = 'block'; text.textContent = 'Check availability first.'; return; }
-      const s = document.getElementById('start').value;
-      const e = document.getElementById('end').value;
-      const out = await explainAvailability({
-        roomLabel: 'R1',
-        start: `2026-11-02T${s}:00Z`,
-        end: `2026-11-02T${e}:00Z`,
-        isAvailable: lastResult.available,
-        reasonCode: lastResult.reason,
-      });
+      const request = buildExplainRequest(lastResult);
+      if (!request) { box.style.display = 'block'; text.textContent = 'Check availability first.'; return; }
+      const out = await explainAvailability(request);
       box.style.display = 'block';
       text.textContent = out.explanation;
     });
