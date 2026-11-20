@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "npx --yes vite@5.4.21 build",
-    "test": "node --test test/availability.test.js test/explainer.test.js test/prompts.test.js"
+    "test": "node --test test/availability.test.js test/explainer.test.js test/prompts.test.js test/decision-integrity.test.js"
   },
   "dependencies": {
     "vite": "^5.4.21"

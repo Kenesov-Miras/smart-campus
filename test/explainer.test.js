@@ -74,6 +74,15 @@ test('E09 invalid model output -> fallback used, ok false', async () => {
   assert.ok(r.explanation.length > 0);
 });
 
+test('E11 simulated API failure (model throws) -> fallback, error "model error"', async () => {
+  const explodingModel = async () => { throw new Error('connection reset by peer'); };
+  const r = await explainAvailability(fact(), { model: explodingModel });
+  assert.equal(r.ok, false);
+  assert.equal(r.error, 'model error');
+  assert.notEqual(r.error, 'timeout'); // distinct from the timeout path
+  assert.ok(r.explanation.length > 0);
+});
+
 test('E10 decision source of truth untouched: mock cannot flip result', async () => {
   const factFalse = fact({ isAvailable: false, reasonCode: REASONS.OVERLAP });
   const r = await explainAvailability(factFalse);
